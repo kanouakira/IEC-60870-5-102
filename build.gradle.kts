@@ -1,5 +1,6 @@
 plugins {
     java
+    checkstyle
 }
 
 repositories {
@@ -19,8 +20,14 @@ java {
     }
 }
 
+checkstyle {
+    maxWarnings = 0
+    toolVersion = "10.0"
+}
+
 tasks {
     test {
         useJUnitPlatform()
     }
 }
+

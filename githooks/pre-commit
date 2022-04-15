@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+# 此钩子脚本在 git commit 前执行。
+# 用于校验此次提交的代码是否都通过测试、代码规范校验等。
+echo "== git commit 检查开始 =="
+# 通过 git stash 暂存工作进度
+# 防止未提交、未跟踪的代码对本次提交产生影响。
+# 仅检查本次已经 git add 的内容是否通过测试。
+git stash -qku
+# 通过 gradle wrapper 执行检查前先清除缓存防止缓存对检查结果干扰。
+# 这里 check 不只执行验证所有单元测试是否通过，当前工程中等价于 test。
+# 在后续引入 checkstyle 等其他插件后，check 也会做对应验证。
+./gradlew clean check
+# 记录上一行执行结果作为返回值
+RESULT=$?
+# 恢复之前暂存的工作进度
+git stash pop -q
+if [ $RESULT -eq 0 ]; then
+  RESULT_STR="成功"
+else
+  RESULT_STR="失败"
+fi
+echo "== git commit 检查$RESULT_STR =="
+exit $RESULT

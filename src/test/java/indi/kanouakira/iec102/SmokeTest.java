@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
+ * 冒烟测试。
+ *
  * @author KanouAkira
  * @date 2022/4/15 22:01
  */
