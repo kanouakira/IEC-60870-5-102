@@ -1,7 +1,7 @@
 package indi.kanouakira.iec102.server.secondary;
 
-import indi.kanouakira.iec102.core.config.DataConfig;
-import indi.kanouakira.iec102.core.handler.DataHandler;
+import indi.kanouakira.iec102.standard.StandardFactory;
+import indi.kanouakira.iec102.standard.StandardInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -15,9 +15,23 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  * @author KanouAkira
  * @date 2022/4/18 16:31
  */
-public interface SecondaryStation {
+public abstract class SecondaryStation {
 
-    default void bind(int port) throws Exception{
+    /* 连接端口 */
+    protected int port;
+
+    /* 连接协议的标准抽象工厂 */
+    protected StandardFactory factory;
+
+    protected SecondaryStation(int port, StandardFactory factory) {
+        this.port = port;
+        this.factory = factory;
+    }
+
+    /**
+     * 启动从站。
+     */
+    public void run() throws Exception{
         // boss 负责接受连接
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         // worker 负责网络读写
@@ -27,7 +41,7 @@ public interface SecondaryStation {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(null)
+                    .childHandler(new StandardInitializer(factory))
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture future = bootstrap.bind(port).sync();
@@ -37,25 +51,5 @@ public interface SecondaryStation {
             bossGroup.shutdownGracefully();
         }
     }
-
-    /**
-     * 启动从站。
-     */
-    void run() throws Exception;
-
-    /**
-     * 设置数据处理方式。
-     *
-     * @return
-     */
-    SecondaryStation setDataHandler(DataHandler dataHandler);
-
-    /**
-     * 设置数据配置。
-     *
-     * @param dataConfig
-     * @return
-     */
-    SecondaryStation setConfig(DataConfig dataConfig);
 
 }

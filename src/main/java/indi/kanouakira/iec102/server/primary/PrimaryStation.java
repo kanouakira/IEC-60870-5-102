@@ -1,7 +1,7 @@
 package indi.kanouakira.iec102.server.primary;
 
-import indi.kanouakira.iec102.core.config.DataConfig;
-import indi.kanouakira.iec102.core.handler.DataHandler;
+import indi.kanouakira.iec102.standard.StandardFactory;
+import indi.kanouakira.iec102.standard.StandardInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -15,9 +15,31 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * @author KanouAkira
  * @date 2022/4/18 16:29
  */
-public interface PrimaryStation {
+public abstract class PrimaryStation {
+    /* 连接主机地址 */
+    protected String host;
 
-    default void connect(String host, int port) throws Exception{
+    /* 连接端口 */
+    protected int port;
+
+    /* 连接协议的标准抽象工厂 */
+    protected StandardFactory factory;
+
+    /**
+     * @param host    连接主机地址
+     * @param port    连接端口
+     * @param factory 连接协议的标准抽象工厂。
+     */
+    protected PrimaryStation(String host, int port, StandardFactory factory) {
+        this.host = host;
+        this.port = port;
+        this.factory = factory;
+    }
+
+    /**
+     * 启动主站默认实现。
+     */
+    void run() throws Exception {
         // boss 负责接受连接
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         try {
@@ -25,32 +47,12 @@ public interface PrimaryStation {
             bootstrap.group(bossGroup)
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.SO_KEEPALIVE, true)
-                    .handler(null);
+                    .handler(new StandardInitializer(factory));
             ChannelFuture future = bootstrap.connect(host, port).sync();
             future.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
         }
     }
-
-    /**
-     * 启动主站。
-     */
-    void run() throws Exception;
-
-    /**
-     * 设置数据处理方式。
-     *
-     * @return
-     */
-    PrimaryStation setDataHandler(DataHandler dataHandler);
-
-    /**
-     * 设置数据配置。
-     *
-     * @param dataConfig
-     * @return
-     */
-    PrimaryStation setConfig(DataConfig dataConfig);
 
 }
