@@ -1,4 +1,4 @@
-package indi.kanouakira.iec102.core.config;
+package indi.kanouakira.iec102.standard;
 
 /**
  * @author KanouAkira

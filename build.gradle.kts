@@ -13,6 +13,10 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
+    // https://mvnrepository.com/artifact/org.joml/joml-2d
+    implementation("org.joml:joml-2d:1.6.0")
+
 }
 
 java {
@@ -27,9 +31,14 @@ checkstyle {
     toolVersion = "10.0"
 }
 
-tasks {
+tasks{
+
     test {
         useJUnitPlatform()
     }
-}
 
+    compileJava{
+        options.encoding = "UTF-8"
+    }
+
+}
