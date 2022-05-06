@@ -72,12 +72,43 @@ public class Iec102UploadFile {
         return typeIdentificationEnum;
     }
 
+    /**
+     * 检查是否未上传。
+     * @return
+     */
     public boolean isNotUploaded(){
         return !localUploaded.get();
     }
 
+    /**
+     * 设置已经上送完毕。
+     */
+    public void setUploadComplete(){
+        localUploaded.set(true);
+    }
+
+    /**
+     * 重置上传完毕的状态，只有在需要重发时调用。
+     */
+    public void resetUploaded(){
+        localUploaded.set(false);
+    }
+
+    /**
+     * 检查是否已经超过需要上送的时间节点。
+     * @param millis 当前时间戳
+     * @return
+     */
     public boolean isNotExpired(long millis){
         return expireAt.getTime() > millis;
+    }
+
+    /**
+     * 获取文件长度。
+     * @return
+     */
+    public int getDataLength(){
+        return fileContext.length;
     }
 
     public void clear(){

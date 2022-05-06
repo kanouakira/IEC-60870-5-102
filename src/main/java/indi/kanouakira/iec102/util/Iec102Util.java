@@ -3,6 +3,8 @@ package indi.kanouakira.iec102.util;
 import indi.kanouakira.iec102.core.enums.FunctionCodeEnum;
 
 /**
+ * IEC 102 协议工具类。
+ *
  * @author KanouAkira
  * @date 2022/4/19 17:46
  */

@@ -26,7 +26,7 @@ public class Iec102SecondaryStation extends SecondaryStation {
         instance.setTime(new Date());
         instance.add(Calendar.MINUTE,  5);
         // 构造一个文件，传入作为测试，启动5分钟后过期。
-        Iec102UploadFile iec102UploadFile = new Iec102UploadFile(TypeIdentificationEnum.ZTXX_QXHJ, "GF_GZ.ZhongBDC_XB-FZ_20211115_100000.dat", fileContext, instance.getTime());
+        Iec102UploadFile iec102UploadFile = new Iec102UploadFile(TypeIdentificationEnum.ZTXX_QXHJ, "GF_GZ.ZhongBDC_XB-FZ_20211115_101500.dat", fileContext, instance.getTime());
         Iec102DataConfig.addFile(iec102UploadFile);
 
         new Iec102SecondaryStation(3000).run() ;

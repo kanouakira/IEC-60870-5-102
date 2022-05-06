@@ -77,7 +77,6 @@ public class Iec104Decoder implements Decoder {
         int messageIndex = index;
         // 连续的 前三个字节是地址
         // 如果是地址联系的只需要设置一个初始地址就可以了
-        // TODO 此处不处理地址
         int messageAddress = Iec104Util.messageAddressToInt(ByteUtil.getByte(bytes, messageIndex, 3));
         ruleDetail104.setMessageAddress(messageAddress);
         messageIndex += 3;

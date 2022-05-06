@@ -1,6 +1,5 @@
 package indi.kanouakira.iec102.standard;
 
-import indi.kanouakira.iec102.core.iec104.CachedThreadPool;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -18,49 +17,24 @@ public class InfomationHandler extends SimpleChannelInboundHandler<MessageDetail
     private DataHandler dataHandler;
 
     public InfomationHandler(DataHandler dataHandler) {
+        if (dataHandler == null)
+            throw new IllegalArgumentException("数据处理实现类不存在");
         this.dataHandler = dataHandler;
     }
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        if (dataHandler != null) {
-            Runnable runnable = () -> {
-                try {
-                    dataHandler.handlerAdded(new ChannelHandlerImpl(ctx));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            CachedThreadPool.getCachedThreadPool().execute(runnable);
-        }
+        dataHandler.handlerAdded(new ChannelHandlerImpl(ctx));
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        if (dataHandler != null) {
-            Runnable runnable = () -> {
-                try {
-                    dataHandler.handlerActive(new ChannelHandlerImpl(ctx));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            CachedThreadPool.getCachedThreadPool().execute(runnable);
-        }
+        dataHandler.handlerActive(new ChannelHandlerImpl(ctx));
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, MessageDetail messageDetail) throws IOException {
-        if (dataHandler != null) {
-            CachedThreadPool.getCachedThreadPool().execute(() -> {
-                try {
-                    dataHandler.channelReceived(new ChannelHandlerImpl(ctx), messageDetail);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            });
-        }
+        dataHandler.channelReceived(new ChannelHandlerImpl(ctx), messageDetail);
     }
 
     @Override
@@ -74,30 +48,12 @@ public class InfomationHandler extends SimpleChannelInboundHandler<MessageDetail
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        if (dataHandler != null) {
-            Runnable runnable = () -> {
-                try {
-                    dataHandler.handlerInactive(new ChannelHandlerImpl(ctx));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            CachedThreadPool.getCachedThreadPool().execute(runnable);
-        }
+        dataHandler.handlerInactive(new ChannelHandlerImpl(ctx));
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        if (dataHandler != null) {
-            Runnable runnable = () -> {
-                try {
-                    dataHandler.handlerRemoved(new ChannelHandlerImpl(ctx));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            };
-            CachedThreadPool.getCachedThreadPool().execute(runnable);
-        }
+        dataHandler.handlerRemoved(new ChannelHandlerImpl(ctx));
     }
 
 }

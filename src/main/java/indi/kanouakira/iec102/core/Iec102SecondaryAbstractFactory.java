@@ -5,6 +5,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 /**
+ * IEC 60870-5-102 的从站抽象工厂实现。
+ *
  * @author KanouAkira
  * @date 2022/4/19 17:06
  */
@@ -49,4 +51,5 @@ public class Iec102SecondaryAbstractFactory implements StandardFactory {
     public DataConfig createDataConfig() {
         return dataConfig;
     }
+
 }

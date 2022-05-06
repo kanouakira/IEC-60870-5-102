@@ -2,9 +2,13 @@ package indi.kanouakira.iec102.core;
 
 import indi.kanouakira.iec102.standard.DataConfig;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
+ * IEC 102 的数据配置类。
+ *
  * @author KanouAkira
  * @date 2022/4/21 11:09
  */
@@ -12,9 +16,6 @@ public class Iec102DataConfig implements DataConfig {
 
     /* 线程变量副本 */
     private static Iec102DataConfig config = null;
-
-//    /* FCB计数线程变量副本 */
-//    private static ThreadLocal<Byte> localFcb = ThreadLocal.withInitial(()-> (byte)0x00);
 
     /* 待上报文件，key:文件名，value：文件字节数组 */
     protected static List<Iec102UploadFile> waitingForUpload = new ArrayList<>();
@@ -32,14 +33,6 @@ public class Iec102DataConfig implements DataConfig {
         this.terminalAddress = terminalAddress;
         Iec102DataConfig.config = this;
     }
-
-//    public static byte getFcb() {
-//        return localFcb.get();
-//    }
-//
-//    public static void setFcb(byte fcb){
-//        localFcb.set(fcb);
-//    }
 
     public static Iec102DataConfig getConfig() {
         return Iec102DataConfig.config;
@@ -61,15 +54,15 @@ public class Iec102DataConfig implements DataConfig {
         return Collections.unmodifiableList(waitingForUpload);
     }
 
-    public static void addFile(Iec102UploadFile file){
+    public static void addFile(Iec102UploadFile file) {
         waitingForUpload.add(file);
     }
 
-    public byte getAddressLength(){
+    public byte getAddressLength() {
         return addressSpecification.length;
     }
 
-    public byte[] getTerminalAddress(){
+    public byte[] getTerminalAddress() {
         return terminalAddress;
     }
 

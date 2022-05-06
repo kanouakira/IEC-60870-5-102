@@ -40,7 +40,6 @@ public class SysUFrameServerHandler extends ChannelInboundHandlerAdapter {
 
 	/**
 	 * @Title: isSysInstruction
-	 * @Description: TODO 判断是否是系统报文
 	 * @param @param bytes
 	 * @param @return
 	 * @return boolean

@@ -5,6 +5,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 /**
+ * 标准协议抽象工厂接口。
  * @author KanouAkira
  * @date 2022/4/18 22:09
  */

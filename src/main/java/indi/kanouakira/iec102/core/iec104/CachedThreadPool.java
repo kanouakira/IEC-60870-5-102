@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 /**
  * 线程池
  */
-// TODO: 2021/8/27 未知为何使用该线程池创建线程，目前认为与 newThread 无区别 
 public final class CachedThreadPool {
 
     private static CachedThreadPool cachedThreadPool = new CachedThreadPool();

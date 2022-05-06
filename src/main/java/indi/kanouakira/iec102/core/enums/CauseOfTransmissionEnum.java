@@ -1,5 +1,7 @@
 package indi.kanouakira.iec102.core.enums;
 
+import java.util.Arrays;
+
 /**
  * IEC 60870-5-102 传输原因枚举。
  *
@@ -93,10 +95,17 @@ public enum CauseOfTransmissionEnum {
         this.value = (byte) value;
     }
 
-    private byte value;
+    private Byte value;
 
     public byte getValue() {
         return value;
+    }
+
+    public static CauseOfTransmissionEnum getCauseOfTransmissionEnum(byte causeOfTransmission) {
+        CauseOfTransmissionEnum causeOfTransmissionEnum = Arrays.stream(CauseOfTransmissionEnum.values())
+                .filter(c -> c.value.equals(causeOfTransmission))
+                .findAny().orElseThrow(() -> new RuntimeException("不存在的传输原因"));
+        return causeOfTransmissionEnum;
     }
 
 }

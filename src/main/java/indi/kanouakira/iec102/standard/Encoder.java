@@ -1,6 +1,8 @@
 package indi.kanouakira.iec102.standard;
 
 /**
+ * 信息对象编码器。
+ *
  * @author KanouAkira
  * @date 2022/4/18 22:21
  */

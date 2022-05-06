@@ -3,7 +3,6 @@ package indi.kanouakira.iec102.core;
 import indi.kanouakira.iec102.core.enums.FunctionCodeEnum;
 import indi.kanouakira.iec102.standard.MessageDetail;
 import indi.kanouakira.iec102.util.ByteUtil;
-import indi.kanouakira.iec102.util.Iec102Util;
 
 import static indi.kanouakira.iec102.core.Iec102DataConfig.getConfig;
 import static indi.kanouakira.iec102.util.Iec102Util.calcCrc8;
@@ -121,6 +120,7 @@ public class Iec102FixedMessageDetail extends MessageDetail implements Iec102Mes
 
         return control;
     }
+
     private byte getFunctionCode(byte control) {
         return (byte) (control & 0b00001111);
     }
@@ -146,16 +146,4 @@ public class Iec102FixedMessageDetail extends MessageDetail implements Iec102Mes
         return functionCodeEnum;
     }
 
-    public static void main(String[] args) {
-        byte[] bytes = ByteUtil.hexStringToBytes("7B");
-        byte control = bytes[0];
-        byte prm = Iec102Util.getPrm(control);
-        byte fcb = Iec102Util.getFcbOrAcd(control);
-        byte fcv = Iec102Util.getFcvOrDfc(control);
-        FunctionCodeEnum functionCodeEnum1 = Iec102Util.getFunctionCodeEnum(control);
-        byte b = Iec102FixedMessageDetail.calcControl(prm, fcb, fcv, functionCodeEnum1.getValue());
-        System.out.println(Integer.toHexString(b));
-        System.out.println();
-
-    }
 }

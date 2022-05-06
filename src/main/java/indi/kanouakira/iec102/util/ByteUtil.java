@@ -5,10 +5,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * @author YDL
- * @ClassName: ByteUtil
- * @Description: byte 工具类
- * @date 2020年5月13日
+ * byte 工具类。
+ *
+ * @author KanouAkira
+ * @date 2022/4/19 18:46
  */
 public class ByteUtil {
 

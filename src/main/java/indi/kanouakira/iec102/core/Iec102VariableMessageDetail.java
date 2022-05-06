@@ -3,12 +3,6 @@ package indi.kanouakira.iec102.core;
 import indi.kanouakira.iec102.core.enums.CauseOfTransmissionEnum;
 import indi.kanouakira.iec102.core.enums.FunctionCodeEnum;
 import indi.kanouakira.iec102.core.enums.TypeIdentificationEnum;
-import indi.kanouakira.iec102.util.ByteUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 
 import static indi.kanouakira.iec102.core.Iec102Constant.*;
 import static indi.kanouakira.iec102.core.Iec102DataConfig.getConfig;
@@ -16,7 +10,6 @@ import static indi.kanouakira.iec102.util.ByteUtil.reverse;
 import static indi.kanouakira.iec102.util.ByteUtil.shortToByteArray;
 import static indi.kanouakira.iec102.util.Iec102Util.calcCrc8;
 import static java.lang.System.arraycopy;
-import static java.lang.System.in;
 
 /**
  * 变长信息帧实体。与标准IEC 60870-5-102定义的不同，此类改造用于文件传输。
@@ -81,16 +74,18 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
         return bytes;
     }
 
-    public static Iec102VariableMessageDetail crateVariableMessageDetail(int prm, int fcbOrAcd, byte[] data, FunctionCodeEnum functionCodeEnum, TypeIdentificationEnum typeIdentificationEnum, CauseOfTransmissionEnum causeOfTransmissionEnum) {
-        byte control = calcControl(prm, fcbOrAcd, functionCodeEnum.getFcv() == null ? 0 : functionCodeEnum.getFcv(), functionCodeEnum.getValue());
+    public static Iec102VariableMessageDetail creatVariableMessageDetail(int prm, int fcbOrAcd, byte[] data, FunctionCodeEnum functionCodeEnum, TypeIdentificationEnum typeIdentificationEnum, CauseOfTransmissionEnum causeOfTransmissionEnum) {
+        return creatVariableMessageDetail(prm, fcbOrAcd, functionCodeEnum.getFcv() == null ? 0 : functionCodeEnum.getFcv(), data, functionCodeEnum, typeIdentificationEnum, causeOfTransmissionEnum);
+    }
+
+    public static Iec102VariableMessageDetail creatVariableMessageDetail(int prm, int fcbOrAcd, int fcvOrDfc, byte[] data, FunctionCodeEnum functionCodeEnum, TypeIdentificationEnum typeIdentificationEnum, CauseOfTransmissionEnum causeOfTransmissionEnum) {
+        byte control = calcControl(prm, fcbOrAcd, fcvOrDfc, functionCodeEnum.getValue());
         Iec102DataConfig config = getConfig();
         if (config == null)
             throw new IllegalStateException("未指定Iec102配置");
         byte[] terminalAddress = getConfig().getTerminalAddress();
-        byte type = typeIdentificationEnum.getValue();
-        byte cot = causeOfTransmissionEnum.getValue();
         /* 计算帧长 */
-        short frameLength = (short) (5 + 2*getConfig().getAddressLength() + data.length);
+        short frameLength = (short) (5 + 2 * getConfig().getAddressLength() + data.length);
 
         /* 封装crc校验部分字节数组 */
         byte[] crcByte = new byte[frameLength];
@@ -98,25 +93,25 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
         crcByte[crcIndex++] = control;
         arraycopy(terminalAddress, 0, crcByte, crcIndex, terminalAddress.length);
         crcIndex += terminalAddress.length;
-        crcByte[crcIndex++] = type;
+        crcByte[crcIndex++] = typeIdentificationEnum.getValue();
         crcByte[crcIndex++] = VARIABLE_STRUCTURE_QUALIFIER;
-        crcByte[crcIndex++] = cot;
+        crcByte[crcIndex++] = causeOfTransmissionEnum.getValue();
         arraycopy(terminalAddress, 0, crcByte, crcIndex, terminalAddress.length);
         crcIndex += terminalAddress.length;
         crcByte[crcIndex++] = RECORD_ADDRESS;
         arraycopy(data, 0, crcByte, crcIndex, data.length);
 
-        return new Iec102VariableMessageDetail(frameLength, control, terminalAddress, type, VARIABLE_STRUCTURE_QUALIFIER, cot, terminalAddress, RECORD_ADDRESS, data, calcCrc8(crcByte));
+        return new Iec102VariableMessageDetail(frameLength, control, terminalAddress, typeIdentificationEnum, VARIABLE_STRUCTURE_QUALIFIER, causeOfTransmissionEnum, terminalAddress, RECORD_ADDRESS, data, calcCrc8(crcByte));
     }
 
     protected Iec102VariableMessageDetail(short frameLength, byte control, byte[] address,
-                                          byte typeIdentification, byte variableStructureQualifier,
-                                          byte causeOfTransmission, byte[] addressOfIntegratedTotal,
+                                          TypeIdentificationEnum typeIdentificationEnum, byte variableStructureQualifier,
+                                          CauseOfTransmissionEnum causeOfTransmissionEnum, byte[] addressOfIntegratedTotal,
                                           byte recordAddress, byte[] data, byte checkSum) {
         super(control, address, checkSum);
         super.setStart(Iec102Constant.VARIABLE_HEAD_DATA);
         this.length = frameLength;
-        this.asdu = new ApplicationServiceDataUnit(typeIdentification, variableStructureQualifier, causeOfTransmission, addressOfIntegratedTotal, recordAddress, data);
+        this.asdu = new ApplicationServiceDataUnit(typeIdentificationEnum, variableStructureQualifier, causeOfTransmissionEnum, addressOfIntegratedTotal, recordAddress, data);
     }
 
     private class ApplicationServiceDataUnit {
@@ -144,16 +139,20 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
         /* 数据区，如果为文件传输，前64字节为文件名 */
         private byte[] data;
 
-        public ApplicationServiceDataUnit(byte typeIdentification, byte variableStructureQualifier, byte causeOfTransmission, byte[] addressOfIntegratedTotal, byte recordAddress, byte[] data) {
-            this.typeIdentification = typeIdentification;
+        public ApplicationServiceDataUnit(TypeIdentificationEnum typeIdentificationEnum, byte variableStructureQualifier,
+                                          CauseOfTransmissionEnum causeOfTransmissionEnum, byte[] addressOfIntegratedTotal,
+                                          byte recordAddress, byte[] data) {
+            this.typeIdentificationEnum = typeIdentificationEnum;
+            this.typeIdentification = typeIdentificationEnum.getValue();
             this.variableStructureQualifier = variableStructureQualifier;
-            this.causeOfTransmission = causeOfTransmission;
+            this.causeOfTransmissionEnum = causeOfTransmissionEnum;
+            this.causeOfTransmission = causeOfTransmissionEnum.getValue();
             this.addressOfIntegratedTotal = addressOfIntegratedTotal;
             this.recordAddress = recordAddress;
             this.data = data;
         }
 
-        public byte[] encode(){
+        public byte[] encode() {
             byte[] bytes = new byte[4 + addressOfIntegratedTotal.length + data.length];
             int index = 0;
             bytes[index++] = typeIdentification;
@@ -165,19 +164,30 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
             arraycopy(data, 0, bytes, index, data.length);
             return bytes;
         }
+
+        public TypeIdentificationEnum getTypeIdentificationEnum() {
+            return typeIdentificationEnum;
+        }
+
+        public CauseOfTransmissionEnum getCauseOfTransmissionEnum() {
+            return causeOfTransmissionEnum;
+        }
+
+        public byte[] getData() {
+            return data;
+        }
     }
 
-//    public static void main(String[] args) throws IOException {
-//        String s = "630000_xny_202202021100_1.tar.gz";
-//        byte[] fileName = s.getBytes(StandardCharsets.UTF_8);
-//        System.out.println(fileName.length);
-//        if (fileName.length != FILENAME_BYTE_LENGTH)
-//            throw new IllegalStateException("文件名长度不符");
-//        File file = new File("C:\\Users\\DELL\\Desktop\\test.dat");
-//        byte[] fileContext = Files.readAllBytes(file.toPath());
-//        byte[] data = new byte[FILENAME_BYTE_LENGTH + fileContext.length];
-//        arraycopy(fileName, 0, data, 0, FILENAME_BYTE_LENGTH);
-//        arraycopy(fileContext, 0, data, Iec102Constant.FILENAME_BYTE_LENGTH, fileContext.length );
-//        Iec102VariableMessageDetail iec102VariableMessageDetail = Iec102VariableMessageDetail.crateVariableMessageDetail(0, 1, data, FunctionCodeEnum.TRANSFORM_DATA, TypeIdentificationEnum.CDQYC, CauseOfTransmissionEnum.TRANSMISSION_FINISHED);
-//    }
+    public TypeIdentificationEnum getType() {
+        return asdu.getTypeIdentificationEnum();
+    }
+
+    public CauseOfTransmissionEnum getCause() {
+        return asdu.getCauseOfTransmissionEnum();
+    }
+
+    public byte[] getData() {
+        return asdu.getData();
+    }
+
 }
