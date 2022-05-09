@@ -4,6 +4,7 @@ import indi.kanouakira.iec102.standard.DataConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -52,6 +53,20 @@ public class Iec102DataConfig implements DataConfig {
 
     public static List<Iec102UploadFile> getWaitingForUpload() {
         return Collections.unmodifiableList(waitingForUpload);
+    }
+
+    /**
+     * 移除过期待上送文件。
+     */
+    public static void removeExpireFile(){
+        Iterator<Iec102UploadFile> iterator = waitingForUpload.iterator();
+        long currentTimeMillis = System.currentTimeMillis();
+        while (iterator.hasNext()) {
+            Iec102UploadFile next = iterator.next();
+            if (!next.isNotExpired(currentTimeMillis)){
+                iterator.remove();
+            }
+        }
     }
 
     public static void addFile(Iec102UploadFile file) {
