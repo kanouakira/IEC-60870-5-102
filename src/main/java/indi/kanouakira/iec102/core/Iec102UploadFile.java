@@ -35,12 +35,27 @@ public class Iec102UploadFile {
     // 线程已读取长度副本，用于分段读取
     private ThreadLocal<Integer> localReadIndex = ThreadLocal.withInitial(() -> 0);
 
-    public Iec102UploadFile(TypeIdentificationEnum typeIdentificationEnum, String fileName, byte[] fileContext, Date expireAt) {
+    /**
+     * 创建待上报文件
+     *
+     * @param typeIdentificationEnum 上报文件的类型标识
+     * @param fileName               上报文件名
+     * @param fileContext            上报文件内容
+     * @param expireAt               上报有效截止时间
+     * @return
+     */
+    public static Iec102UploadFile createUploadFile(TypeIdentificationEnum typeIdentificationEnum, String fileName, byte[] fileContext, Date expireAt) {
+        if (typeIdentificationEnum == null || fileName == null || fileContext == null || expireAt == null)
+            throw new IllegalArgumentException();
+        if (fileName.getBytes(StandardCharsets.UTF_8).length > FILENAME_BYTE_LENGTH)
+            throw new IllegalArgumentException("文件名过长");
+        return new Iec102UploadFile(typeIdentificationEnum, fileName, fileContext, expireAt);
+    }
+
+    protected Iec102UploadFile(TypeIdentificationEnum typeIdentificationEnum, String fileName, byte[] fileContext, Date expireAt) {
         this.typeIdentificationEnum = typeIdentificationEnum;
         this.fileName = fileName;
         this.fileNameBytes = fileName.getBytes(StandardCharsets.UTF_8);
-        if (fileNameBytes.length > FILENAME_BYTE_LENGTH)
-            throw new IllegalArgumentException("文件名过长");
         this.fileContext = fileContext;
         this.expireAt = expireAt;
     }

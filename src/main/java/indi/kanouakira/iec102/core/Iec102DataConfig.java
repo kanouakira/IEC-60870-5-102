@@ -69,8 +69,10 @@ public class Iec102DataConfig implements DataConfig {
         }
     }
 
-    public static void addFile(Iec102UploadFile file) {
-        waitingForUpload.add(file);
+    public static boolean addFile(Iec102UploadFile file) {
+        if (file == null)
+            return false;
+        return waitingForUpload.add(file);
     }
 
     public byte getAddressLength() {
