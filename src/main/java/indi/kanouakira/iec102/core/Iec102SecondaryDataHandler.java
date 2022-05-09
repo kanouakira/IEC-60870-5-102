@@ -7,6 +7,8 @@ import indi.kanouakira.iec102.standard.ChannelHandler;
 import indi.kanouakira.iec102.standard.DataConfig;
 import indi.kanouakira.iec102.standard.DataHandler;
 import indi.kanouakira.iec102.standard.MessageDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +27,8 @@ import static indi.kanouakira.iec102.util.ByteUtil.*;
  * @date 2022/4/22 18:08
  */
 public class Iec102SecondaryDataHandler extends DataHandler {
+
+    final static Logger logger = LoggerFactory.getLogger(Iec102SecondaryDataHandler.class);
 
     /* 表示从站 */
     private final int PRM = 0;
@@ -53,12 +57,12 @@ public class Iec102SecondaryDataHandler extends DataHandler {
 
     @Override
     public void handlerAdded(ChannelHandler channelHandler) {
-        System.out.println(String.format("子站建立连接"));
+        logger.debug("子站建立连接");
     }
 
     @Override
     public void channelReceived(ChannelHandler channelHandler, MessageDetail messageDetail) {
-        System.out.println(String.format("收到%s报文: %s", channelHandler.getChannel().remoteAddress(), byteArrayToHexString(messageDetail.encode())));
+        logger.debug(String.format("收到%s报文: %s", channelHandler.getChannel().remoteAddress(), byteArrayToHexString(messageDetail.encode())));
         refreshFileList();
         Iec102MessageDetail iec102MessageDetail;
         if (messageDetail instanceof Iec102FixedMessageDetail){
@@ -73,7 +77,7 @@ public class Iec102SecondaryDataHandler extends DataHandler {
         if (FCB == messageDetailFcb && !RESET_COMMUNICATE_UNIT.equals(functionCodeEnum)) {
             if (lastResponse != null) {
                 channelHandler.writeAndFlush(lastResponse);
-                System.out.println(String.format("重发%s报文: %s", channelHandler.getChannel().remoteAddress(), byteArrayToHexString(lastResponse.encode())));
+                logger.debug(String.format("重发%s报文: %s", channelHandler.getChannel().remoteAddress(), byteArrayToHexString(lastResponse.encode())));
             }
             return;
         }else {
@@ -158,12 +162,12 @@ public class Iec102SecondaryDataHandler extends DataHandler {
             }
         }
         channelHandler.writeAndFlush(lastResponse);
-        System.out.println(String.format("回复%s报文: %s", channelHandler.getChannel().remoteAddress(), byteArrayToHexString(lastResponse.encode())));
+        logger.debug(String.format("回复%s报文: %s", channelHandler.getChannel().remoteAddress(), byteArrayToHexString(lastResponse.encode())));
     }
 
     @Override
     public void handlerRemoved(ChannelHandler channelHandler) {
-        System.out.println("子站连接断开");
+        logger.debug("子站连接断开");
     }
 
     /**
@@ -177,7 +181,7 @@ public class Iec102SecondaryDataHandler extends DataHandler {
                 .filter(file -> file.isNotUploaded()) // 未上传
                 .collect(Collectors.toList());
         ACD = uploadFileList.size() > 0 ? 1 : 0;
-        System.out.println(String.format("检查，ACD：%d， 待上传文件数：%d", ACD, uploadFileList.size()));
+        logger.debug(String.format("检查，ACD：%d， 待上传文件数：%d", ACD, uploadFileList.size()));
     }
 
 }
