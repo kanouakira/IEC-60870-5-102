@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static indi.kanouakira.iec102.util.ContextUtil.getBean;
+
 /**
  * IEC 102 的数据配置类。
  *
@@ -64,6 +66,8 @@ public class Iec102DataConfig implements DataConfig {
         while (iterator.hasNext()) {
             Iec102UploadFile next = iterator.next();
             if (!next.isNotExpired(currentTimeMillis)){
+                // 结果回调
+                getBean(Iec102CallbackHandler.class).handleResult(next);
                 iterator.remove();
             }
         }

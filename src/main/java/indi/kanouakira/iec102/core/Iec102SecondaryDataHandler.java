@@ -19,6 +19,7 @@ import static indi.kanouakira.iec102.core.Iec102VariableMessageDetail.creatVaria
 import static indi.kanouakira.iec102.core.enums.CauseOfTransmissionEnum.*;
 import static indi.kanouakira.iec102.core.enums.FunctionCodeEnum.*;
 import static indi.kanouakira.iec102.util.ByteUtil.*;
+import static indi.kanouakira.iec102.util.ContextUtil.getBean;
 
 /**
  * IEC 60870-5-102 从站数据处理，改造以实现文件上送。
@@ -151,7 +152,8 @@ public class Iec102SecondaryDataHandler extends DataHandler {
                             ACD = 1;
                         }else {
                             causeOfTransmissionEnum = SEND_CONFIRM;
-                            lastSendFile.clear();
+                            // 结果回调
+                            getBean(Iec102CallbackHandler.class).handleResult(lastSendFile);
                             lastSendFile = null;
                             ACD = this.uploadFileList.size() > 1 ? 1 : 0;
                         }

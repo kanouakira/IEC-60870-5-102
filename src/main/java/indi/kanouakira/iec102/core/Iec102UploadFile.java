@@ -118,12 +118,20 @@ public class Iec102UploadFile {
         return expireAt.getTime() > millis;
     }
 
+    public boolean isNotExpired(){
+        return isNotExpired(System.currentTimeMillis());
+    }
+
     /**
      * 获取文件长度。
      * @return
      */
     public int getDataLength(){
         return fileContext.length;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public void clear(){
