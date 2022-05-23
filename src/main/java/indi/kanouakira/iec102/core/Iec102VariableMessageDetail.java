@@ -2,7 +2,6 @@ package indi.kanouakira.iec102.core;
 
 import indi.kanouakira.iec102.core.enums.CauseOfTransmissionEnum;
 import indi.kanouakira.iec102.core.enums.FunctionCodeEnum;
-import indi.kanouakira.iec102.core.enums.TypeIdentificationEnum;
 
 import static indi.kanouakira.iec102.core.Iec102Constant.*;
 import static indi.kanouakira.iec102.core.Iec102DataConfig.getConfig;
@@ -74,11 +73,11 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
         return bytes;
     }
 
-    public static Iec102VariableMessageDetail creatVariableMessageDetail(int prm, int fcbOrAcd, byte[] data, FunctionCodeEnum functionCodeEnum, TypeIdentificationEnum typeIdentificationEnum, CauseOfTransmissionEnum causeOfTransmissionEnum) {
-        return creatVariableMessageDetail(prm, fcbOrAcd, functionCodeEnum.getFcv() == null ? 0 : functionCodeEnum.getFcv(), data, functionCodeEnum, typeIdentificationEnum, causeOfTransmissionEnum);
+    public static Iec102VariableMessageDetail creatVariableMessageDetail(int prm, int fcbOrAcd, byte[] data, FunctionCodeEnum functionCodeEnum, byte typeIdentification, CauseOfTransmissionEnum causeOfTransmissionEnum) {
+        return creatVariableMessageDetail(prm, fcbOrAcd, functionCodeEnum.getFcv() == null ? 0 : functionCodeEnum.getFcv(), data, functionCodeEnum, typeIdentification, causeOfTransmissionEnum);
     }
 
-    public static Iec102VariableMessageDetail creatVariableMessageDetail(int prm, int fcbOrAcd, int fcvOrDfc, byte[] data, FunctionCodeEnum functionCodeEnum, TypeIdentificationEnum typeIdentificationEnum, CauseOfTransmissionEnum causeOfTransmissionEnum) {
+    public static Iec102VariableMessageDetail creatVariableMessageDetail(int prm, int fcbOrAcd, int fcvOrDfc, byte[] data, FunctionCodeEnum functionCodeEnum, byte typeIdentification, CauseOfTransmissionEnum causeOfTransmissionEnum) {
         byte control = calcControl(prm, fcbOrAcd, fcvOrDfc, functionCodeEnum.getValue());
         Iec102DataConfig config = getConfig();
         if (config == null)
@@ -93,7 +92,7 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
         crcByte[crcIndex++] = control;
         arraycopy(terminalAddress, 0, crcByte, crcIndex, terminalAddress.length);
         crcIndex += terminalAddress.length;
-        crcByte[crcIndex++] = typeIdentificationEnum.getValue();
+        crcByte[crcIndex++] = typeIdentification;
         crcByte[crcIndex++] = VARIABLE_STRUCTURE_QUALIFIER;
         crcByte[crcIndex++] = causeOfTransmissionEnum.getValue();
         arraycopy(terminalAddress, 0, crcByte, crcIndex, terminalAddress.length);
@@ -101,22 +100,21 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
         crcByte[crcIndex++] = RECORD_ADDRESS;
         arraycopy(data, 0, crcByte, crcIndex, data.length);
 
-        return new Iec102VariableMessageDetail(frameLength, control, terminalAddress, typeIdentificationEnum, VARIABLE_STRUCTURE_QUALIFIER, causeOfTransmissionEnum, terminalAddress, RECORD_ADDRESS, data, calcCrc8(crcByte));
+        return new Iec102VariableMessageDetail(frameLength, control, terminalAddress, typeIdentification, VARIABLE_STRUCTURE_QUALIFIER, causeOfTransmissionEnum, terminalAddress, RECORD_ADDRESS, data, calcCrc8(crcByte));
     }
 
     protected Iec102VariableMessageDetail(short frameLength, byte control, byte[] address,
-                                          TypeIdentificationEnum typeIdentificationEnum, byte variableStructureQualifier,
+                                          byte typeIdentification, byte variableStructureQualifier,
                                           CauseOfTransmissionEnum causeOfTransmissionEnum, byte[] addressOfIntegratedTotal,
                                           byte recordAddress, byte[] data, byte checkSum) {
         super(control, address, checkSum);
         super.setStart(Iec102Constant.VARIABLE_HEAD_DATA);
         this.length = frameLength;
-        this.asdu = new ApplicationServiceDataUnit(typeIdentificationEnum, variableStructureQualifier, causeOfTransmissionEnum, addressOfIntegratedTotal, recordAddress, data);
+        this.asdu = new ApplicationServiceDataUnit(typeIdentification, variableStructureQualifier, causeOfTransmissionEnum, addressOfIntegratedTotal, recordAddress, data);
     }
 
     private class ApplicationServiceDataUnit {
         /* 类型标识 */
-        private TypeIdentificationEnum typeIdentificationEnum;
         private byte typeIdentification;
         /* 可变结构限定词 1字节
         D7	            D6	D5	D4	D3	D2	D1	D0
@@ -139,11 +137,10 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
         /* 数据区，如果为文件传输，前64字节为文件名 */
         private byte[] data;
 
-        public ApplicationServiceDataUnit(TypeIdentificationEnum typeIdentificationEnum, byte variableStructureQualifier,
+        public ApplicationServiceDataUnit(byte typeIdentification, byte variableStructureQualifier,
                                           CauseOfTransmissionEnum causeOfTransmissionEnum, byte[] addressOfIntegratedTotal,
                                           byte recordAddress, byte[] data) {
-            this.typeIdentificationEnum = typeIdentificationEnum;
-            this.typeIdentification = typeIdentificationEnum.getValue();
+            this.typeIdentification = typeIdentification;
             this.variableStructureQualifier = variableStructureQualifier;
             this.causeOfTransmissionEnum = causeOfTransmissionEnum;
             this.causeOfTransmission = causeOfTransmissionEnum.getValue();
@@ -165,10 +162,6 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
             return bytes;
         }
 
-        public TypeIdentificationEnum getTypeIdentificationEnum() {
-            return typeIdentificationEnum;
-        }
-
         public CauseOfTransmissionEnum getCauseOfTransmissionEnum() {
             return causeOfTransmissionEnum;
         }
@@ -178,9 +171,7 @@ public class Iec102VariableMessageDetail extends Iec102FixedMessageDetail {
         }
     }
 
-    public TypeIdentificationEnum getType() {
-        return asdu.getTypeIdentificationEnum();
-    }
+    public byte getType() { return asdu.typeIdentification; }
 
     public CauseOfTransmissionEnum getCause() {
         return asdu.getCauseOfTransmissionEnum();

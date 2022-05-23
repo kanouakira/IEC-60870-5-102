@@ -15,7 +15,7 @@ import static indi.kanouakira.iec102.core.Iec102Constant.FILENAME_BYTE_LENGTH;
  */
 public class Iec102UploadFile {
     // 文件类型
-    private TypeIdentificationEnum typeIdentificationEnum;
+    private byte typeIdentification;
 
     // 文件名
     private String fileName;
@@ -38,22 +38,22 @@ public class Iec102UploadFile {
     /**
      * 创建待上报文件
      *
-     * @param typeIdentificationEnum 上报文件的类型标识
-     * @param fileName               上报文件名
-     * @param fileContext            上报文件内容
-     * @param expireAt               上报有效截止时间
+     * @param typeIdentification 上报文件的类型标识
+     * @param fileName           上报文件名
+     * @param fileContext        上报文件内容
+     * @param expireAt           上报有效截止时间
      * @return
      */
-    public static Iec102UploadFile createUploadFile(TypeIdentificationEnum typeIdentificationEnum, String fileName, byte[] fileContext, Date expireAt) {
-        if (typeIdentificationEnum == null || fileName == null || fileContext == null || expireAt == null)
+    public static Iec102UploadFile createUploadFile(byte typeIdentification, String fileName, byte[] fileContext, Date expireAt) {
+        if (fileName == null || fileContext == null || expireAt == null)
             throw new IllegalArgumentException();
         if (fileName.getBytes(StandardCharsets.UTF_8).length > FILENAME_BYTE_LENGTH)
             throw new IllegalArgumentException("文件名过长");
-        return new Iec102UploadFile(typeIdentificationEnum, fileName, fileContext, expireAt);
+        return new Iec102UploadFile(typeIdentification, fileName, fileContext, expireAt);
     }
 
-    protected Iec102UploadFile(TypeIdentificationEnum typeIdentificationEnum, String fileName, byte[] fileContext, Date expireAt) {
-        this.typeIdentificationEnum = typeIdentificationEnum;
+    protected Iec102UploadFile(byte typeIdentification, String fileName, byte[] fileContext, Date expireAt) {
+        this.typeIdentification = typeIdentification;
         this.fileName = fileName;
         this.fileNameBytes = fileName.getBytes(StandardCharsets.UTF_8);
         this.fileContext = fileContext;
@@ -83,8 +83,8 @@ public class Iec102UploadFile {
         localReadIndex.set(0);
     }
 
-    public TypeIdentificationEnum getTypeIdentificationEnum() {
-        return typeIdentificationEnum;
+    public byte getTypeIdentification() {
+        return typeIdentification;
     }
 
     /**

@@ -2,7 +2,6 @@ package indi.kanouakira.iec102.core;
 
 import indi.kanouakira.iec102.core.enums.CauseOfTransmissionEnum;
 import indi.kanouakira.iec102.core.enums.FunctionCodeEnum;
-import indi.kanouakira.iec102.core.enums.TypeIdentificationEnum;
 import indi.kanouakira.iec102.standard.ChannelHandler;
 import indi.kanouakira.iec102.standard.DataConfig;
 import indi.kanouakira.iec102.standard.DataHandler;
@@ -111,7 +110,7 @@ public class Iec102SecondaryDataHandler extends DataHandler {
                 }
 
                 // 根据剩余待上送内容是否大于批大小设置传输原因。
-                TypeIdentificationEnum typeIdentificationEnum = lastSendFile.getTypeIdentificationEnum();
+                byte typeIdentification = lastSendFile.getTypeIdentification();
                 data = lastSendFile.readDataBytes(BATCH_SIZE);
                 if (data == null)
                     throw new RuntimeException("待上送文件已无需读取内容");
@@ -126,7 +125,7 @@ public class Iec102SecondaryDataHandler extends DataHandler {
                 }else {
                     causeOfTransmissionEnum = TRANSMISSION_CONTINUE;
                 }
-                lastResponse = creatVariableMessageDetail(PRM, ACD, data, DATA_RESPONSE, typeIdentificationEnum, causeOfTransmissionEnum);
+                lastResponse = creatVariableMessageDetail(PRM, ACD, data, DATA_RESPONSE, typeIdentification, causeOfTransmissionEnum);
             }
             // 收到传送数据。
             case TRANSFORM_DATA ->{
@@ -144,8 +143,10 @@ public class Iec102SecondaryDataHandler extends DataHandler {
                         int receiveLength = byteArrayToInt(reverse(detail.getData()));
 
                         CauseOfTransmissionEnum causeOfTransmissionEnum;
+                        int dataLength = lastSendFile.getDataLength();
+                        logger.debug("主站收到文件长度：{}，实际发送文件长度：{}", receiveLength, dataLength);
                         // 主站表示收到的文件长度与实际发送的长度不符
-                        if (receiveLength != lastSendFile.getDataLength()){
+                        if (receiveLength != dataLength){
                             causeOfTransmissionEnum = RESEND_CONFIRM;
                             lastSendFile.resetReadIndex();
                             lastSendFile.resetUploaded();

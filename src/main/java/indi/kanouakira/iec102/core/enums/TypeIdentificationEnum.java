@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 /**
  * IEC 60870-5-102 类型标识枚举。
+ * 枚举仅用于主站判断使用。
  *
  * @author KanouAkira
  * @date 2022/4/20 16:36
@@ -94,6 +95,9 @@ public enum TypeIdentificationEnum {
 
     /* 单帧报文超长 */
     FRAME_OVER_LENGTH(0x9A),
+
+    /* 主站对时 */
+    TIME_CALIBRATION(0x67),
 
     /* 新规范逆变器信息报文(或风机信息报文) */
     NEW_NBQ(0xAC),
