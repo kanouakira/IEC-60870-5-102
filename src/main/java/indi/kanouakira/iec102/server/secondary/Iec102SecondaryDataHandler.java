@@ -1,5 +1,6 @@
-package indi.kanouakira.iec102.core;
+package indi.kanouakira.iec102.server.secondary;
 
+import indi.kanouakira.iec102.core.*;
 import indi.kanouakira.iec102.core.enums.CauseOfTransmissionEnum;
 import indi.kanouakira.iec102.core.enums.FunctionCodeEnum;
 import indi.kanouakira.iec102.standard.ChannelHandler;

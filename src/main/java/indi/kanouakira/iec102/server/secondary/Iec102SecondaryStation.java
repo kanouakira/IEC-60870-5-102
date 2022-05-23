@@ -1,7 +1,6 @@
 package indi.kanouakira.iec102.server.secondary;
 
 import indi.kanouakira.iec102.core.Iec102DataConfig;
-import indi.kanouakira.iec102.core.Iec102SecondaryAbstractFactory;
 
 import java.util.concurrent.TimeUnit;
 

@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
  */
 public class SecondaryStationFactory {
 
-    final static Logger logger = LoggerFactory.getLogger(SecondaryStation.class);
+    final static Logger logger = LoggerFactory.getLogger(SecondaryStationFactory.class);
 
-    public static SecondaryStation createSecondaryStation(int port, StandardProtocolEnum protocol) {
+    public static SecondaryStation create(int port, StandardProtocolEnum protocol) {
         SecondaryStation station = switch (protocol) {
             case IEC102 -> new Iec102SecondaryStation(port);
             default -> throw new IllegalStateException("未知协议");
