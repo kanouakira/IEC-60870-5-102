@@ -73,8 +73,8 @@ public class Iec102SecondaryDataHandler extends DataHandler {
         // FCB 位没变且功能码不为复位通信单元，发送上次报文。
         // 如果变了记录新的 FCB 位
         FunctionCodeEnum functionCodeEnum = iec102MessageDetail.getFunctionCodeEnum();
-        int messageDetailFcb = iec102MessageDetail.getFcb();
-        if (FCB == messageDetailFcb && !RESET_COMMUNICATE_UNIT.equals(functionCodeEnum)) {
+        int messageDetailFcb = iec102MessageDetail.getFcbOrAcd();
+        if (FCB == messageDetailFcb && !RESET_COMMUNICATE_UNIT.equals(functionCodeEnum) && !SUMMON_LINK_STATUS.equals(functionCodeEnum)) {
             if (lastResponse != null) {
                 channelHandler.writeAndFlush(lastResponse);
                 logger.debug(String.format("重发%s报文: %s", channelHandler.getChannel().remoteAddress(), byteArrayToHexString(lastResponse.encode())));
@@ -138,7 +138,7 @@ public class Iec102SecondaryDataHandler extends DataHandler {
                 CauseOfTransmissionEnum cause = detail.getCause();
                 switch (cause){
                     // 传输结束处理
-                    case ACTIVATION_TERMINATION -> {
+                    case TRANSMISSION_FINISHED -> {
                         // 主站表示收到的文件长度
                         int receiveLength = byteArrayToInt(reverse(detail.getData()));
 
@@ -154,7 +154,10 @@ public class Iec102SecondaryDataHandler extends DataHandler {
                         }else {
                             causeOfTransmissionEnum = SEND_CONFIRM;
                             // 结果回调
-                            getBean(Iec102CallbackHandler.class).handleResult(lastSendFile);
+                            Iec102CallbackHandler handler = getBean(Iec102CallbackHandler.class);
+                            if (handler != null) {
+                                handler.handleResult(lastSendFile);
+                            }
                             lastSendFile = null;
                             ACD = this.uploadFileList.size() > 1 ? 1 : 0;
                         }

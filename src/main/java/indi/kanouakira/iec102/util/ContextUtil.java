@@ -23,10 +23,14 @@ public class ContextUtil implements ApplicationContextAware {
     }
 
     public static Object getBean(String beanName){
+        if (applicationContext == null)
+            return null;
         return applicationContext.getBean(beanName);
     }
 
     public static <T> T getBean(Class<T> clazz){
+        if (applicationContext == null)
+            return null;
         return (T)applicationContext.getBean(clazz);
     }
 

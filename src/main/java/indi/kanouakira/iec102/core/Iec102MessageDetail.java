@@ -10,7 +10,7 @@ import indi.kanouakira.iec102.core.enums.FunctionCodeEnum;
  */
 public interface Iec102MessageDetail {
 
-    int getFcb();
+    int getFcbOrAcd();
 
     FunctionCodeEnum getFunctionCodeEnum();
 

@@ -67,7 +67,10 @@ public class Iec102DataConfig implements DataConfig {
             Iec102UploadFile next = iterator.next();
             if (!next.isNotExpired(currentTimeMillis)){
                 // 结果回调
-                getBean(Iec102CallbackHandler.class).handleResult(next);
+                Iec102CallbackHandler handler = getBean(Iec102CallbackHandler.class);
+                if (handler != null) {
+                    handler.handleResult(next);
+                }
                 iterator.remove();
             }
         }
