@@ -52,7 +52,7 @@ public class Iec102Constant {
     public static final byte RECORD_ADDRESS = 0x00;
 
     /* 数据区文件名占用64个字节 */
-    public static final int FILENAME_BYTE_LENGTH = 64;
+    public static int FILENAME_BYTE_LENGTH = 64;
 
     /* 数据区文件内容占用字节上限512字节 */
     public static final int FILE_CONTEXT_MAX_LENGTH = 512;
