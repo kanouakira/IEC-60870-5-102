@@ -24,12 +24,6 @@ public interface StandardFactory {
     ChannelInboundHandlerAdapter createCheckHandler();
 
     /**
-     * 协议传输帧编码实现。
-     * @return
-     */
-    Encoder createEncoder();
-
-    /**
      * 协议传输帧解码实现。
      * @return
      */

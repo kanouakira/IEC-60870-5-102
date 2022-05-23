@@ -33,11 +33,6 @@ public class Iec102SecondaryAbstractFactory implements StandardFactory {
     }
 
     @Override
-    public Encoder createEncoder() {
-        return null;
-    }
-
-    @Override
     public Decoder createDecoder() {
         return new Iec102Decoder();
     }
