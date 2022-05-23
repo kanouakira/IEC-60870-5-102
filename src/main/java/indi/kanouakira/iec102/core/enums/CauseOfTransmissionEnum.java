@@ -10,47 +10,47 @@ import java.util.Arrays;
  */
 public enum CauseOfTransmissionEnum {
 
-    /* 自发 */
-    SPONTANEOUS(0x03),
-
-    /* 初始化 */
-    INITIALIZED(0x04),
-
-    /* 请求 */
-    REQUESTED(0x05),
-
-    /* 激活 */
-    ACTIVATION(0x06),
-
-    /* 激活确认 */
-    ACTIVATION_CONFIRMATION(0x07),
-
-    /* 惰性 */
-    DEACTIVATION(0x08),
-
-    /* 惰性确认 */
-    DEACTIVATION_CONFIRMATION(0x09),
-
-    /* 激活终止，主站认为文件接收结束 */
-    ACTIVATION_TERMINATION(0x0A),
-
-    /* 所请求的数据记录不可用 */
-    DATA_RECORD_NOT_AVAILABLE(0x0D),
-
-    /* 所请求的应用服务数据单元类型不可用 */
-    ASDU_TYPE_NOT_AVAILABLE(0x0E),
-
-    /* 控制站发送的 ASDU 中的记录编号未知 */
-    NOT_KNOWN_RECORD_NUMBER(0x0F),
-
-    /* 控制站发送的 ASDU 中的地址规范未知 */
-    NOT_KNOWN_ADDRESS_SPECIFICATION(0x10),
-
-    /* 所请求的信息对象不可用 */
-    INFOMATION_OBJECT_NOT_AVAILABLE(0x11),
-
-    /* 所请求的集成期不可用 */
-    INTEGRATION_PERIOD_NOT_AVAILABLE(0x12),
+//    /* 自发 */
+//    SPONTANEOUS(0x03),
+//
+//    /* 初始化 */
+//    INITIALIZED(0x04),
+//
+//    /* 请求 */
+//    REQUESTED(0x05),
+//
+//    /* 激活 */
+//    ACTIVATION(0x06),
+//
+//    /* 激活确认 */
+//    ACTIVATION_CONFIRMATION(0x07),
+//
+//    /* 惰性 */
+//    DEACTIVATION(0x08),
+//
+//    /* 惰性确认 */
+//    DEACTIVATION_CONFIRMATION(0x09),
+//
+//    /* 激活终止，主站认为文件接收结束 */
+//    ACTIVATION_TERMINATION(0x0A),
+//
+//    /* 所请求的数据记录不可用 */
+//    DATA_RECORD_NOT_AVAILABLE(0x0D),
+//
+//    /* 所请求的应用服务数据单元类型不可用 */
+//    ASDU_TYPE_NOT_AVAILABLE(0x0E),
+//
+//    /* 控制站发送的 ASDU 中的记录编号未知 */
+//    NOT_KNOWN_RECORD_NUMBER(0x0F),
+//
+//    /* 控制站发送的 ASDU 中的地址规范未知 */
+//    NOT_KNOWN_ADDRESS_SPECIFICATION(0x10),
+//
+//    /* 所请求的信息对象不可用 */
+//    INFOMATION_OBJECT_NOT_AVAILABLE(0x11),
+//
+//    /* 所请求的集成期不可用 */
+//    INTEGRATION_PERIOD_NOT_AVAILABLE(0x12),
 
     /* 以下为IEC 60870-5-102 未使用的内容，自定义内容地址可能与上述有重复 */
 

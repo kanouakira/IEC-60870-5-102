@@ -71,11 +71,18 @@ public enum FunctionCodeEnum {
         return fcv;
     }
 
+    public static FunctionCodeEnum getFunctionCodeEnum(byte functionCode) {
+        FunctionCodeEnum functionCodeEnum = Arrays.stream(FunctionCodeEnum.values())
+                .filter(fc -> fc.value.equals(functionCode))
+                .findAny().orElseThrow(() -> new RuntimeException(String.format("不存在的功能码：%d", functionCode)));
+        return functionCodeEnum;
+    }
+
     public static FunctionCodeEnum getFunctionCodeEnum(byte functionCode, Integer prm) {
         FunctionCodeEnum functionCodeEnum = Arrays.stream(FunctionCodeEnum.values())
                 .filter(fc -> prm.equals(fc.prm))
                 .filter(fc -> fc.value.equals(functionCode))
-                .findAny().orElseThrow(() -> new RuntimeException("不存在的功能码"));
+                .findAny().orElseThrow(() -> new RuntimeException(String.format("不存在的功能码：%d", functionCode)));
         return functionCodeEnum;
     }
 

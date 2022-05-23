@@ -31,8 +31,8 @@ public class Iec102Util {
      * @return
      */
     public static FunctionCodeEnum getFunctionCodeEnum(byte control){
-        return FunctionCodeEnum.getFunctionCodeEnum((byte) (control & 0b00001111), 1);
-    }
+        return FunctionCodeEnum.getFunctionCodeEnum((byte) (control & 0b00001111));
+   }
 
     public static byte getPrm(byte control){
         return (byte)((control >> 6));

@@ -2,12 +2,15 @@ package indi.kanouakira.iec102.server.primary;
 
 import indi.kanouakira.iec102.standard.StandardFactory;
 import indi.kanouakira.iec102.standard.StandardInitializer;
+import indi.kanouakira.iec102.standard.StationThreadPool;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 主站抽象类。
@@ -16,6 +19,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * @date 2022/4/18 16:29
  */
 public abstract class PrimaryStation {
+
+    final static Logger logger = LoggerFactory.getLogger(PrimaryStation.class);
+
     /* 连接主机地址 */
     protected String host;
 
@@ -39,20 +45,28 @@ public abstract class PrimaryStation {
     /**
      * 启动主站默认实现。
      */
-    void run() throws Exception {
-        // boss 负责接受连接
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        try {
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(bossGroup)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.SO_KEEPALIVE, true)
-                    .handler(new StandardInitializer(factory));
-            ChannelFuture future = bootstrap.connect(host, port).sync();
-            future.channel().closeFuture().sync();
-        } finally {
-            bossGroup.shutdownGracefully();
-        }
+
+    public void run() {
+        StationThreadPool.execute(() -> {
+            // boss 负责接受连接
+            EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+            try {
+                Bootstrap bootstrap = new Bootstrap();
+                bootstrap.group(bossGroup)
+                        .channel(NioSocketChannel.class)
+                        .option(ChannelOption.SO_KEEPALIVE, true)
+                        .handler(new StandardInitializer(factory));
+                try {
+                    logger.info("启动主站连接主机:{},端口:{}", host, port);
+                    ChannelFuture future = bootstrap.connect(host, port).sync();
+                    future.channel().closeFuture().sync();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            } finally {
+                bossGroup.shutdownGracefully();
+            }
+        });
     }
 
 }

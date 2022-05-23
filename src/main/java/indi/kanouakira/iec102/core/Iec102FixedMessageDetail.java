@@ -5,6 +5,7 @@ import indi.kanouakira.iec102.standard.MessageDetail;
 import indi.kanouakira.iec102.util.ByteUtil;
 
 import static indi.kanouakira.iec102.core.Iec102DataConfig.getConfig;
+import static indi.kanouakira.iec102.core.enums.FunctionCodeEnum.*;
 import static indi.kanouakira.iec102.util.Iec102Util.calcCrc8;
 
 /**
@@ -63,6 +64,48 @@ public class Iec102FixedMessageDetail extends MessageDetail implements Iec102Mes
         encode[encode.length - 2] = checkSum;
         encode[encode.length - 1] = end;
         return encode;
+    }
+
+    /* 创建主站基本指令 */
+
+    /**
+     * 请求链路状态
+     *
+     * @param fcb 新的 fcb 位
+     * @return
+     */
+    public static Iec102FixedMessageDetail summonLinkStatus(int fcb) {
+        return createFixedMessageDetail(1, fcb, SUMMON_LINK_STATUS);
+    }
+
+    /**
+     * 复位通信单元
+     *
+     * @param fcb 新的 fcb 位
+     * @return
+     */
+    public static Iec102FixedMessageDetail resetCommunicateUnit(int fcb) {
+        return createFixedMessageDetail(1, fcb, RESET_COMMUNICATE_UNIT);
+    }
+
+    /**
+     * 召唤一级数据
+     *
+     * @param fcb 新的 fcb 位
+     * @return
+     */
+    public static Iec102FixedMessageDetail summonClassOne(int fcb) {
+        return createFixedMessageDetail(1, fcb, SUMMON_CLASS_ONE);
+    }
+
+    /**
+     * 召唤二级数据
+     *
+     * @param fcb 新的 fcb 位
+     * @return
+     */
+    public static Iec102FixedMessageDetail summonClassTwo(int fcb) {
+        return createFixedMessageDetail(1, fcb, SUMMON_CLASS_TWO);
     }
 
     public static Iec102FixedMessageDetail createFixedMessageDetail(int prm, int fcbOrAcd, FunctionCodeEnum functionCodeEnum) {
@@ -135,9 +178,8 @@ public class Iec102FixedMessageDetail extends MessageDetail implements Iec102Mes
         return (control & 0b01000000) >> 6;
     }
 
-
     @Override
-    public int getFcb() {
+    public int getFcbOrAcd() {
         return (control & 0b00100000) >> 5;
     }
 
